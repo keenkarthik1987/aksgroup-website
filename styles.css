@@ -44,7 +44,7 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgroun
 .top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:72px}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
 .brand .logo{display:block;background:var(--logo-bg);border-radius:6px;padding:var(--logo-pad)}
-.brand .logo img{display:block;height:48px;width:auto}
+.brand .logo img{display:block;height:40px;width:auto}
 .brand b{font:800 20px/1 var(--display);font-stretch:110%;letter-spacing:.03em;display:block}
 .brand small{display:block;font:500 10px/1 var(--mono);letter-spacing:.14em;color:var(--muted);margin-top:5px}
 nav.main{display:flex;align-items:center;gap:4px}
@@ -83,7 +83,7 @@ nav.main > a.btn{background:var(--navy-deep);color:#fff;margin-left:8px;padding:
 .titleblock{background:var(--surface);border:1.5px solid var(--ink);font-family:var(--mono);font-size:12px}
 .titleblock .tbhead{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--navy-deep);color:#fff;letter-spacing:.12em;font-size:11px;text-transform:uppercase}
 .titleblock .tb-logo{display:flex;justify-content:center;padding:18px 12px;border-bottom:1px solid var(--line);background:#fff}
-.titleblock .tb-logo img{height:100px;width:auto}
+.titleblock .tb-logo img{height:80px;width:auto;max-width:100%}
 .titleblock .row{display:grid;grid-template-columns:112px 1fr;border-bottom:1px solid var(--line)}
 .titleblock .row:last-of-type{border-bottom:0}
 .titleblock .k{padding:9px 12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;border-right:1px solid var(--line);font-size:10px;display:flex;align-items:center}
@@ -248,7 +248,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--navy);outline-of
 footer{background:#151311;color:#AFA79C;font-size:14px}
 footer .wrap{padding-block:52px 36px;display:grid;gap:36px}
 footer .cols{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:28px}
-footer .fl img{height:64px;width:auto;background:#F4F6F8;border-radius:6px;padding:4px 8px}
+footer .fl img{height:48px;width:auto;background:#F4F6F8;border-radius:6px;padding:4px 8px}
 footer .fl p{margin-top:14px;max-width:32ch}
 footer h4{font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#fff;margin-bottom:14px}
 footer ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
