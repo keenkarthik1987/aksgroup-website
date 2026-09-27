@@ -97,14 +97,23 @@ const PATHS={
 };
 /* Replace these example entries with real projects and photos. */
 const PROJECTS=[
- {s:"active",co:"Construction",t:"Legal basement suite",loc:"Etobicoke",d:"Two-bedroom second unit: permit drawings, fire separation, separate HVAC and ESA inspections."},
- {s:"active",co:"Engineering",t:"Service upgrade & EV charging",loc:"Mississauga",d:"Load calculation, 200 A service upgrade design and load-managed EV charger."},
- {s:"completed",co:"Engineering",t:"Commercial fit-out MEP",loc:"Toronto",d:"Electrical, HVAC and plumbing drawings for a tenant fit-out permit."},
- {s:"completed",co:"Real estate",t:"Income property purchase",loc:"Brampton",d:"Purchase screened for suite potential, then legalized by our construction team."},
- {s:"completed",co:"Construction",t:"Main-floor renovation",loc:"Etobicoke",d:"Kitchen, lighting and panel upgrade, designed and built by one team."},
- {s:"active",co:"Real estate",t:"Detached home listing",loc:"Vaughan",d:"Pre-listing repairs and suite documentation packaged for buyers."}
+ {s:"completed",co:"Construction",t:"Rouge Forest Cres",loc:"Pickering",d:"Legal basement suite."},
+ {s:"completed",co:"Construction",t:"Charterhouse Dr",loc:"Whitby",d:"Legal basement suite."},
+ {s:"completed",co:"Construction",t:"Greenvalley Trail",loc:"Oshawa",d:"Legal basement suite."},
+ {s:"completed",co:"Construction",t:"Searell Ave",loc:"Ajax",d:"Legal basement suite."},
+ {s:"completed",co:"Construction",t:"Lofthouse Dr",loc:"Whitby",d:"Legal basement suite."},
+ {s:"completed",co:"Construction",t:"Glendower Circuit",loc:"Scarborough",d:"Legal basement suite."},
+ {s:"completed",co:"Construction",t:"Rossland Rd E, Unit #5",loc:"Whitby",d:"Legal basement suite."},
+ {s:"completed",co:"Construction",t:"Matthew Murray",loc:"Oshawa",d:"Legal basement suite."},
+ {s:"completed",co:"Construction",t:"Scotland Rd",loc:"Scarborough",d:"Panel upgrade / EV charging."},
+ {s:"completed",co:"Construction",t:"Scarden Ave",loc:"Scarborough",d:"Panel upgrade / EV charging."},
+ {s:"completed",co:"Construction",t:"Havendale Rd",loc:"Scarborough",d:"Panel upgrade / EV charging."},
+ {s:"completed",co:"Construction",t:"Glendower Circuit",loc:"Scarborough",d:"Panel upgrade / EV charging."},
+ {s:"active",co:"Construction",t:"Noake Cres",loc:"Ajax",d:"Legal basement suite — in progress."},
+ {s:"active",co:"Construction",t:"Tracey Court",loc:"Whitby",d:"Legal basement suite — in progress."},
+ {s:"active",co:"Construction",t:"Vanier St",loc:"Whitby",d:"Legal basement suite — in progress."}
 ];
-function card(p){return `<article class="pcard" data-s="${p.s}"><div class="ph">EXAMPLE ENTRY<br>Add project photo</div><div class="body"><div class="meta"><span class="chip ${p.s==='active'?'st-active':'st-done'}">${p.s==='active'?'Active':'Completed'}</span><span class="chip">${p.co}</span><span class="chip">${p.loc}</span></div><h3>${p.t}</h3><p>${p.d}</p></div></article>`}
+function card(p){return `<article class="pcard" data-s="${p.s}"><div class="ph">PHOTO COMING SOON</div><div class="body"><div class="meta"><span class="chip ${p.s==='active'?'st-active':'st-done'}">${p.s==='active'?'Active':'Completed'}</span><span class="chip">${p.co}</span><span class="chip">${p.loc}</span></div><h3>${p.t}</h3><p>${p.d}</p></div></article>`}
 function renderProjects(root){
  root.querySelectorAll('.proj[data-limit]').forEach(el=>{el.innerHTML=PROJECTS.slice(0,+el.dataset.limit).map(card).join('')});
  const all=root.querySelector('#proj-all'); if(all) all.innerHTML=PROJECTS.map(card).join('');
