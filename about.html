@@ -115,7 +115,7 @@ const PROJECTS=[
  {s:"active",co:"Construction",t:"Tracey Court",loc:"Whitby",d:"Legal basement suite — in progress."},
  {s:"active",co:"Construction",t:"Vanier St",loc:"Whitby",d:"Legal basement suite — in progress."}
 ];
-function card(p){return `<article class="pcard" data-s="${p.s}"><div class="ph">PHOTO COMING SOON</div><div class="body"><div class="meta"><span class="chip ${p.s==='active'?'st-active':'st-done'}">${p.s==='active'?'Active':'Completed'}</span><span class="chip">${p.co}</span><span class="chip">${p.loc}</span></div><h3>${p.t}</h3><p>${p.d}</p></div></article>`}
+function card(p){return `<article class="pcard no-photo" data-s="${p.s}"><div class="body"><div class="meta"><span class="chip ${p.s==='active'?'st-active':'st-done'}">${p.s==='active'?'Active':'Completed'}</span><span class="chip">${p.co}</span><span class="chip">${p.loc}</span></div><h3>${p.t}</h3><p>${p.d}</p></div></article>`}
 function renderProjects(root){
  root.querySelectorAll('.proj[data-limit]').forEach(el=>{el.innerHTML=PROJECTS.slice(0,+el.dataset.limit).map(card).join('')});
  const all=root.querySelector('#proj-all'); if(all) all.innerHTML=PROJECTS.map(card).join('');
