@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Find a Home | AKS Realty</title>
+<meta name="description" content="Tell AKS Realty what you want to rent or buy: area, budget, bedrooms and washrooms. We reply with suitable homes.">
+<link rel="canonical" href="https://www.aksgroup.ca/find-a-home.html">
+<meta property="og:title" content="Find a Home | AKS Realty">
+<meta property="og:description" content="Tell AKS Realty what you want to rent or buy: area, budget, bedrooms and washrooms. We reply with suitable homes.">
+<meta property="og:url" content="https://www.aksgroup.ca/find-a-home.html">
+<meta property="og:image" content="https://www.aksgroup.ca/logo.png">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* Find-a-home form */
+.fah{max-width:860px}
+#fah{display:block}
+#fah fieldset{border:0;padding:0;margin:0;min-width:0}
+#fah fieldset[hidden]{display:none}
+#fah legend{font:850 clamp(22px,3vw,30px)/1.1 var(--display);font-stretch:82%;text-transform:uppercase;margin-bottom:20px;padding:0}
+#fah .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+#fah .grid .full,#fah .full{grid-column:1/-1}
+#fah .nav{display:flex;justify-content:space-between;gap:12px;margin-top:24px}
+label.check{display:flex;gap:12px;align-items:flex-start;font-weight:400;font-size:14px;cursor:pointer}
+label.check input{width:20px;height:20px;flex:none;margin-top:2px;accent-color:var(--navy-deep);padding:0}
+label.check b{display:block;font-weight:600;font-size:15px}
+label.check small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.err{padding:12px 14px;border-radius:6px;font-size:14px;margin-top:16px;background:color-mix(in srgb,#C0392B 14%,transparent);color:var(--ink)}
+.invalid{border-color:#C0392B!important;outline:2px solid color-mix(in srgb,#C0392B 40%,transparent)}
+.done{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:clamp(22px,4vw,40px)}
+.done h2{font-size:clamp(30px,4vw,44px);font-weight:900;font-stretch:80%;text-transform:uppercase;margin-bottom:12px}
+@media (max-width:620px){#fah .grid{grid-template-columns:1fr}}
+.mapbox{border:1px solid var(--line);border-radius:8px;padding:14px;background:var(--paper)}
+.maptop{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:10px}
+.maptop b{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.mapsearch{display:flex;gap:8px;flex:1;min-width:220px;max-width:360px}
+.mapsearch .btn{padding:10px 16px}
+.maptools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tool{font:600 14px/1 var(--body);padding:10px 14px;border-radius:6px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.tool[aria-pressed="true"]{background:var(--navy-deep);color:#fff;border-color:var(--navy-deep)}
+.tool.plain{margin-left:auto;border-color:transparent;background:transparent;color:var(--muted)}
+#map{height:clamp(300px,52vh,440px);border-radius:6px;border:1px solid var(--line);background:#E5E3DF}
+.maphint{font-size:13px;color:var(--muted);margin-top:10px}
+.shapelist{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.shapelist li{flex-wrap:wrap;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;padding:8px 10px;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.shapelist .sz{flex:1 1 100%;display:flex;align-items:center;gap:10px;font:500 11px/1 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.shapelist input[type=range]{flex:1;padding:0;border:0;background:none;accent-color:var(--navy-deep);width:auto}
+.shapelist button{font:600 12px/1 var(--body);border:0;background:transparent;color:var(--navy);cursor:pointer;text-decoration:underline}
+#fah .step + .step{margin-top:34px;padding-top:30px;border-top:1px solid var(--line)}
+#fah .nav.end{justify-content:flex-end}
+</style>
+</head>
+<body>
+<header class="top" id="hdr">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="AKS Group home">
+      <span class="logo"><img src="logo.png" alt="AKS Group logo" width="121" height="40"></span>
+      <div><b>AKS GROUP</b><small>DESIGN · BUILD · REALTY</small></div>
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="main" id="nav" aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <div class="dd"><button type="button">Companies</button>
+        <div class="panel">
+          <a href="engineering.html"><b>AKS Consulting Group Inc.</b><span>MEP engineering design</span></a>
+          <a href="electrical.html"><b>AKS Electricals &amp; Automation</b><span>Electrical contracting &amp; construction</span></a>
+          <a href="realty.html"><b>AKS Realty</b><span>Buying, selling, investing &amp; insurance</span></a>
+        </div>
+      </div>
+      <div class="dd"><button type="button">Projects</button>
+        <div class="panel">
+          <a href="projects.html#active"><b>Active projects</b><span>Currently in design or construction</span></a>
+          <a href="projects.html#completed"><b>Completed projects</b><span>Delivered and closed out</span></a>
+        </div>
+      </div>
+      <a class="btn" href="contact.html">Contact us</a>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="pagehead"><div class="wrap"><span class="eyebrow">AKS Realty</span><h1>Find your next home</h1>
+<p>Tell us what you're looking for. We review every request personally and come back with homes that fit your area, budget and needs.</p>
+<span class="lic">Karthik Sundaram · Sales Representative · HomeLife Landmark Realty Inc., Brokerage</span></div></section>
+
+<section class="sec"><div class="wrap fah">
+
+<form id="fah" name="find-a-home" method="POST" novalidate>
+  <p hidden><label>Leave blank<input name="bot-field"></label></p>
+
+  <!-- STEP 1 -->
+  <fieldset class="step full" data-i="0">
+    <legend>What are you looking for?</legend>
+    <div class="grid">
+      <label class="full">I want to
+        <select name="intent" id="intent" required>
+          <option value="Rent">Rent a home</option>
+          <option value="Buy">Buy a home</option>
+        </select></label>
+      <label class="full">Preferred area(s) / neighbourhoods
+        <input name="areas" id="areas" placeholder="e.g. Etobicoke, Scarborough, Whitby, near Kipling GO"></label>
+      <div class="full mapbox" id="mapbox" hidden>
+        <div class="maptop">
+          <b>Or mark your preferred area on the map</b>
+          <div class="mapsearch"><input id="mapSearch" type="search" placeholder="Search a city or address" aria-label="Search the map"><button type="button" class="btn line" id="mapGo">Go</button></div>
+        </div>
+        <div class="maptools" role="group" aria-label="Drawing tools">
+          <button type="button" class="tool" data-mode="circle" aria-pressed="true">&#9711; Circle</button>
+          <button type="button" class="tool" data-mode="square" aria-pressed="false">&#9645; Square</button>
+          <button type="button" class="tool plain" id="mapClear">Clear all</button>
+        </div>
+        <div id="map" role="application" aria-label="Map for marking preferred areas"></div>
+        <p class="maphint">Pick Circle or Square, then <strong>click the map</strong> to drop it. Drag a shape to move it. <strong>Drag its corner handles to make it bigger or smaller</strong>, or use the size slider below. You can mark up to 5 areas.</p>
+        <ul class="shapelist" id="shapeList"></ul>
+        <input type="hidden" name="map_areas" id="mapAreas">
+      </div>
+      <label><span id="minLbl">Minimum rent ($/month)</span>
+        <input name="budget_min" type="number" min="0" step="50" inputmode="numeric" placeholder="2000"></label>
+      <label><span id="maxLbl">Maximum rent ($/month)</span>
+        <input name="budget_max" type="number" min="0" step="50" inputmode="numeric" placeholder="3000" required></label>
+      <label>Bedrooms
+        <select name="bedrooms" required>
+          <option value="">Select…</option><option>Studio</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option>
+        </select></label>
+      <label>Washrooms
+        <select name="washrooms" required>
+          <option value="">Select…</option><option>1</option><option>1.5</option><option>2</option><option>2.5</option><option>3</option><option>4+</option>
+        </select></label>
+      <label>Property type
+        <select name="property_type">
+          <option>Any</option><option>Detached house</option><option>Semi-detached</option><option>Townhouse</option><option>Condo apartment</option><option>Basement apartment</option>
+        </select></label>
+      <label>Parking spots needed
+        <select name="parking"><option>0</option><option selected>1</option><option>2</option><option>3+</option></select></label>
+      <label>Move-in / possession date
+        <input name="move_date" type="date"></label>
+      <label>Number of occupants
+        <input name="occupants" type="number" min="1" max="12" inputmode="numeric" placeholder="e.g. 3"></label>
+      <label class="full">Other requirements
+        <textarea name="requirements" placeholder="Pets, near school or transit, laundry, furnished, accessibility, must-haves and deal-breakers…"></textarea></label>
+    </div>
+  </fieldset>
+
+  <!-- STEP 2 -->
+  <fieldset class="step full" data-i="1">
+    <legend>How do we reach you?</legend>
+    <div class="grid">
+      <label>Full name<input name="name" autocomplete="name" required></label>
+      <label>Phone<input name="phone" type="tel" autocomplete="tel" inputmode="tel" required></label>
+      <label>Email<input name="email" type="email" autocomplete="email" required></label>
+      <label>Best way to reach you
+        <select name="contact_pref"><option>Phone call</option><option>Text message</option><option>Email</option></select></label>
+      <label class="full">Best time to reach you
+        <select name="contact_time"><option>Anytime</option><option>Weekday daytime</option><option>Weekday evenings</option><option>Weekends</option></select></label>
+      <label class="check full"><input type="checkbox" name="consent" value="yes" required>
+        <span>I agree that AKS Realty may use this information to find suitable homes and contact me about them. I understand I can ask for my information to be deleted at any time by emailing info@aksgroup.ca.</span></label>
+    </div>
+  </fieldset>
+
+
+  <div class="nav end"><button class="btn" type="submit" id="submitBtn">Send my request</button></div>
+  <p class="err full" id="err" role="alert" hidden></p>
+</form>
+
+<div class="done" id="done" hidden>
+  <h2>Request received</h2>
+  <p>Thanks <span id="doneName"></span>. We'll review what you're looking for and contact you at <strong id="doneEmail"></strong> within one business day with suitable options. Questions? Call (647) 620-1689.</p>
+</div>
+</div></section></main>
+
+<footer><div class="wrap">
+  <div class="cols">
+    <div class="fl"><img src="logo.png" alt="AKS Group" width="145" height="48"><p>Engineering, construction and real estate for homeowners, investors and builders across Ontario.</p></div>
+    <div><h4>Group</h4><ul><li><a href="index.html">Home</a></li><li><a href="about.html">About AKS Group</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+    <div><h4>Companies</h4><ul><li><a href="engineering.html">AKS Consulting Group</a></li><li><a href="electrical.html">AKS Electricals &amp; Automation</a></li><li><a href="realty.html">AKS Realty</a></li><li><a href="find-a-home.html">Find a home (rent/buy)</a></li><li><a href="realty.html#insurance">Insurance ($20 credit)</a></li></ul></div>
+    <div><h4>Projects</h4><ul><li><a href="projects.html#active">Active projects</a></li><li><a href="projects.html#completed">Completed projects</a></li></ul></div>
+    <div><h4>Contact</h4><ul><li>(647) 620-1689</li><li>info@aksgroup.ca</li><li>Scarborough, Toronto, ON</li><li><a href="https://www.facebook.com/Keenkarthik.Sundaram" target="_blank" rel="noopener">Facebook</a></li></ul></div>
+  </div>
+  <div class="legal">
+    <div><b>Engineering</b>Engineering services provided by AKS Consulting Group Inc., holder of PEO Certificate of Authorization #100695342.</div>
+    <div><b>Electrical contracting</b>Electrical work performed by AKS Electricals &amp; Automation, ECRA/ESA Licence #7017436.</div>
+    <div><b>Real estate</b>Karthik Sundaram, Sales Representative, HomeLife Landmark Realty Inc., Brokerage. RECO registration #6000472. Not intended to solicit buyers or sellers currently under contract.</div>
+  </div>
+  <div class="base"><span>© <span class="js-year">2026</span> AKS Group · aksgroup.ca</span></div>
+</div></footer>
+<script>
+/* Google Maps API key (Maps JavaScript API + Geocoding API enabled, restricted to your site's domain). Leave "" to hide the map and keep the typed-area box only. */
+const MAPS_API_KEY = "";
+/* Google Apps Script web-app URL (Code.gs). Requests go ONLY here: it creates a Drive folder per client and adds a row to the common sheet. Required: until it is set, the form shows an error instead of sending. */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwkp07tGxd3uaGtKZekuW-DfEejKxVVZsP3mlXq_kkp_d5NYi2OE2ZbLk2l8Keo7pC4/exec";
+(function(){
+ const form=document.getElementById('fah'), steps=[...form.querySelectorAll('.step')];
+ const err=document.getElementById('err');
+ function syncIntent(){
+  const r=form.intent.value==='Rent';
+  document.getElementById('minLbl').textContent=r?'Minimum rent ($/month)':'Minimum price ($)';
+  document.getElementById('maxLbl').textContent=r?'Maximum rent ($/month)':'Maximum price ($)';
+  form.budget_min.placeholder=r?'2000':'600000'; form.budget_max.placeholder=r?'3000':'900000'; form.budget_min.step=form.budget_max.step=r?50:5000;
+ }
+ form.intent.addEventListener('change',syncIntent); syncIntent();
+ function valid(i){
+  let ok=true,first=null;
+  steps[i].querySelectorAll('input,select,textarea').forEach(el=>{
+   el.classList.remove('invalid');
+   if(el.disabled) return;
+   if(!el.checkValidity()){ok=false;el.classList.add('invalid');first=first||el}
+  });
+  if(ok&&i===0&&!form.areas.value.trim()&&!(window.fahShapes&&window.fahShapes.length)){
+   ok=false; form.areas.classList.add('invalid'); first=form.areas;
+   err.textContent='Please type a preferred area or mark one on the map.'; err.hidden=false; first.focus(); return false;
+  }
+  if(!ok){err.textContent='Please fill in the highlighted fields.';err.hidden=false;first.focus()} else err.hidden=true;
+  return ok;
+ }
+ form.addEventListener('input',e=>e.target.classList.remove('invalid'));
+ form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!valid(0)||!valid(1)) return;
+  const btn=document.getElementById('submitBtn'); btn.disabled=true; btn.textContent='Sending…';
+  try{
+   const fd=new FormData(form);
+   if(!APPS_SCRIPT_URL) throw new Error('Google Drive link not set up');
+   await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.fromEntries(fd))});
+   /* sent to your Google Drive only */
+   form.hidden=true;
+   document.getElementById('doneName').textContent=form.elements['name'].value.split(' ')[0];
+   document.getElementById('doneEmail').textContent=form.email.value;
+   document.getElementById('done').hidden=false; window.scrollTo({top:0,behavior:'smooth'});
+  }catch(_){
+   err.textContent='Sorry, that did not go through. Please try again, or call (647) 620-1689 / email info@aksgroup.ca.';err.hidden=false;
+   btn.disabled=false; btn.textContent='Send my request';
+  }
+ });
+})();
+
+/* ---- Map: mark preferred areas with circles / squares ---- */
+window.fahShapes=[];
+(function(){
+ const box=document.getElementById('mapbox'); if(!MAPS_API_KEY||!box) return;
+ let map,mode='circle',geocoder; const shapes=window.fahShapes, MAX=5, R=1500, M=111320;
+ const fmt=n=>n.toFixed(5), link=(la,ln)=>`https://www.google.com/maps/search/?api=1&query=${fmt(la)},${fmt(ln)}`;
+ const kind=s=>s.kind==='circle'?'Circle':'Square';
+ function sizeKm(s){if(s.kind==='circle')return s.obj.getRadius()/1000;const b=s.obj.getBounds();return (b.getNorthEast().lat()-b.getSouthWest().lat())/2*M/1000}
+ function setSize(s,km){
+  const m=km*1000; if(s.kind==='circle'){s.obj.setRadius(m);return}
+  const b=s.obj.getBounds(),la=(b.getNorthEast().lat()+b.getSouthWest().lat())/2,ln=(b.getNorthEast().lng()+b.getSouthWest().lng())/2;
+  s.obj.setBounds({north:la+m/M,south:la-m/M,east:ln+m/(M*Math.cos(la*Math.PI/180)),west:ln-m/(M*Math.cos(la*Math.PI/180))});
+ }
+ function describe(s,i){
+  if(s.kind==='circle'){const c=s.obj.getCenter();return `Circle ${i+1}: centre ${fmt(c.lat())},${fmt(c.lng())} (${link(c.lat(),c.lng())}), radius ${(s.obj.getRadius()/1000).toFixed(1)} km`}
+  const b=s.obj.getBounds(),sw=b.getSouthWest(),ne=b.getNorthEast();
+  return `Square ${i+1}: SW ${fmt(sw.lat())},${fmt(sw.lng())} to NE ${fmt(ne.lat())},${fmt(ne.lng())} (${link((sw.lat()+ne.lat())/2,(sw.lng()+ne.lng())/2)})`;
+ }
+ const plain=(s,i)=>describe(s,i).replace(/ \(https[^)]*\)/,'');
+ function update(){
+  document.getElementById('mapAreas').value=shapes.map(describe).join('\n');
+  shapes.forEach((s,i)=>{ if(!s.txt) return; s.txt.textContent=plain(s,i); if(document.activeElement!==s.range) s.range.value=Math.min(15,Math.max(.3,sizeKm(s))); });
+  if(shapes.length) document.getElementById('areas').classList.remove('invalid');
+ }
+ function renderList(){
+  const ul=document.getElementById('shapeList'); ul.innerHTML='';
+  shapes.forEach(s=>{
+   const li=document.createElement('li'), sp=document.createElement('span'), b=document.createElement('button'), lab=document.createElement('label'), rg=document.createElement('input');
+   b.type='button'; b.textContent='Remove'; b.addEventListener('click',()=>{s.obj.setMap(null);shapes.splice(shapes.indexOf(s),1);renderList()});
+   rg.type='range'; rg.min='0.3'; rg.max='15'; rg.step='0.1'; rg.setAttribute('aria-label','Resize area');
+   rg.addEventListener('input',()=>setSize(s,+rg.value));
+   lab.className='sz'; lab.append('Smaller',rg,'Bigger');
+   s.txt=sp; s.range=rg; li.append(sp,b,lab); ul.append(li);
+  });
+  update();
+ }
+ function add(latLng){
+  if(shapes.length>=MAX){alert('You can mark up to '+MAX+' areas. Remove one to add another.');return}
+  const st={strokeColor:'#B5651D',strokeOpacity:.95,strokeWeight:2,fillColor:'#B5651D',fillOpacity:.22,map,editable:true,draggable:true};
+  let obj;
+  if(mode==='circle') obj=new google.maps.Circle({...st,center:latLng,radius:R});
+  else{const dLat=R/M,dLng=R/(M*Math.cos(latLng.lat()*Math.PI/180));
+   obj=new google.maps.Rectangle({...st,bounds:{north:latLng.lat()+dLat,south:latLng.lat()-dLat,east:latLng.lng()+dLng,west:latLng.lng()-dLng}})}
+  shapes.push({kind:mode,obj});
+  ['radius_changed','center_changed','bounds_changed'].forEach(ev=>obj.addListener(ev,update)); renderList();
+ }
+ window.fahInitMap=function(){
+  box.hidden=false; geocoder=new google.maps.Geocoder();
+  map=new google.maps.Map(document.getElementById('map'),{center:{lat:43.6858,lng:-79.5990},zoom:10,mapTypeControl:false,streetViewControl:false,fullscreenControl:true,gestureHandling:'cooperative'});
+  map.addListener('click',e=>add(e.latLng));
+  box.querySelectorAll('.tool[data-mode]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.mode;box.querySelectorAll('.tool[data-mode]').forEach(x=>x.setAttribute('aria-pressed',x===b))}));
+  document.getElementById('mapClear').addEventListener('click',()=>{shapes.splice(0).forEach(s=>s.obj.setMap(null));renderList()});
+  const go=()=>{const q=document.getElementById('mapSearch').value.trim();if(!q)return;
+   geocoder.geocode({address:q,componentRestrictions:{country:'CA'}},(r,st)=>{if(st==='OK'){map.fitBounds(r[0].geometry.viewport)}})};
+  document.getElementById('mapGo').addEventListener('click',go);
+  document.getElementById('mapSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go()}});
+ };
+ const sc=document.createElement('script');
+ sc.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(MAPS_API_KEY)+'&callback=fahInitMap&loading=async';
+ sc.async=true; document.head.appendChild(sc);
+})();
+document.querySelectorAll('.js-year').forEach(el=>el.textContent=new Date().getFullYear());
+document.addEventListener('click',e=>{
+ const m=e.target.closest('.menu-btn'); if(m){const h=document.getElementById('hdr');const o=h.classList.toggle('open');m.setAttribute('aria-expanded',o)}
+ else if(e.target.closest('nav.main a')){document.getElementById('hdr').classList.remove('open')}
+});
+</script>
+</body>
+</html>
