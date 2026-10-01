@@ -44,7 +44,19 @@ label.check small{display:block;color:var(--muted);font-size:13px;margin-top:2px
 .tool{font:600 14px/1 var(--body);padding:10px 14px;border-radius:6px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
 .tool[aria-pressed="true"]{background:var(--navy-deep);color:#fff;border-color:var(--navy-deep)}
 .tool.plain{margin-left:auto;border-color:transparent;background:transparent;color:var(--muted)}
-#map{height:clamp(300px,52vh,440px);border-radius:6px;border:1px solid var(--line);background:#E5E3DF}
+#map{position:relative;z-index:0;height:clamp(300px,52vh,440px);overflow:hidden;touch-action:none;cursor:crosshair;user-select:none;-webkit-user-select:none;border-radius:6px;border:1px solid var(--line);background:#dde4e8}
+#map .tl,#map .ov{position:absolute;inset:0}
+#map .tl img{position:absolute;left:0;top:0;width:256px;height:256px;max-width:none;-webkit-user-drag:none}
+#map .ov{pointer-events:none}
+#map .shp{position:absolute;box-sizing:border-box;border:2px solid #B5651D;background:rgba(181,101,29,.22);pointer-events:auto;cursor:move;touch-action:none}
+#map .hd{position:absolute;left:0;top:0;width:18px;height:18px;box-sizing:border-box;background:#fff;border:2px solid #B5651D;border-radius:3px;pointer-events:auto;touch-action:none;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+#map .hd.mv{border-radius:50%;background:#B5651D;border-color:#fff;cursor:move;display:grid;place-items:center;color:#fff;font:700 11px/1 sans-serif}
+#map .mz{position:absolute;left:10px;top:10px;display:grid;box-shadow:0 1px 4px rgba(0,0,0,.35);border-radius:4px;overflow:hidden}
+#map .mz button{width:34px;height:34px;font:600 20px/1 var(--body);border:0;border-bottom:1px solid #d6dce4;background:#fff;color:#16191F;cursor:pointer;padding:0}
+#map .mz button:last-child{border-bottom:0}
+#map .mattr{position:absolute;right:0;bottom:0;background:rgba(255,255,255,.85);font:11px/1 sans-serif;padding:3px 6px;color:#333}
+#map .mattr a{color:#0b5cad}
+.maperr{color:var(--ink);font-weight:600}
 .maphint{font-size:13px;color:var(--muted);margin-top:10px}
 .shapelist{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
 .shapelist li{flex-wrap:wrap;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;padding:8px 10px;background:var(--surface);border:1px solid var(--line);border-radius:6px}
@@ -53,6 +65,16 @@ label.check small{display:block;color:var(--muted);font-size:13px;margin-top:2px
 .shapelist button{font:600 12px/1 var(--body);border:0;background:transparent;color:var(--navy);cursor:pointer;text-decoration:underline}
 #fah .step + .step{margin-top:34px;padding-top:30px;border-top:1px solid var(--line)}
 #fah .nav.end{justify-content:flex-end}
+.lbl{display:block;font-size:13px;font-weight:600;margin-bottom:8px}
+.lbl em{font-style:normal;font-weight:400;color:var(--muted)}
+.pts{display:flex;flex-wrap:wrap;gap:8px}
+label.pt{display:inline-flex;gap:0;position:relative;font-weight:500;cursor:pointer}
+label.pt input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+label.pt span{padding:10px 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--paper);font-size:14px;line-height:1.2}
+label.pt:hover span{border-color:var(--navy)}
+label.pt input:checked + span{background:var(--navy-deep);border-color:var(--navy-deep);color:#fff}
+label.pt input:checked + span::before{content:"\2713\00a0"}
+label.pt input:focus-visible + span{outline:2px solid var(--navy);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -70,7 +92,7 @@ label.check small{display:block;color:var(--muted);font-size:13px;margin-top:2px
         <div class="panel">
           <a href="engineering.html"><b>AKS Consulting Group Inc.</b><span>MEP engineering design</span></a>
           <a href="electrical.html"><b>AKS Electricals &amp; Automation</b><span>Electrical contracting &amp; construction</span></a>
-          <a href="realty.html"><b>AKS Realty</b><span>Buying, selling, investing &amp; insurance</span></a>
+          <a href="realty.html"><b>AKS Realty</b><span>Buying, selling &amp; investing</span></a>
         </div>
       </div>
       <div class="dd"><button type="button">Projects</button>
@@ -104,10 +126,10 @@ label.check small{display:block;color:var(--muted);font-size:13px;margin-top:2px
         </select></label>
       <label class="full">Preferred area(s) / neighbourhoods
         <input name="areas" id="areas" placeholder="e.g. Etobicoke, Scarborough, Whitby, near Kipling GO"></label>
-      <div class="full mapbox" id="mapbox" hidden>
+      <div class="full mapbox" id="mapbox">
         <div class="maptop">
           <b>Or mark your preferred area on the map</b>
-          <div class="mapsearch"><input id="mapSearch" type="search" placeholder="Search a city or address" aria-label="Search the map"><button type="button" class="btn line" id="mapGo">Go</button></div>
+          <div class="mapsearch"><input id="mapSearch" type="search" placeholder="Search a city or street in Ontario" aria-label="Search the map"><button type="button" class="btn line" id="mapGo">Go</button></div>
         </div>
         <div class="maptools" role="group" aria-label="Drawing tools">
           <button type="button" class="tool" data-mode="circle" aria-pressed="true">&#9711; Circle</button>
@@ -115,7 +137,8 @@ label.check small{display:block;color:var(--muted);font-size:13px;margin-top:2px
           <button type="button" class="tool plain" id="mapClear">Clear all</button>
         </div>
         <div id="map" role="application" aria-label="Map for marking preferred areas"></div>
-        <p class="maphint">Pick Circle or Square, then <strong>click the map</strong> to drop it. Drag a shape to move it. <strong>Drag its corner handles to make it bigger or smaller</strong>, or use the size slider below. You can mark up to 5 areas.</p>
+        <p class="maphint">Pick Circle or Square, then <strong>click the map</strong> to drop it. Zoom with the + / &minus; buttons (or Ctrl + scroll). Drag a shape to move it, and <strong>drag the white corner squares to make it bigger or smaller</strong>, or use the size slider below. Up to 5 areas.</p>
+        <p class="maphint maperr" id="mapMsg" role="status" hidden></p>
         <ul class="shapelist" id="shapeList"></ul>
         <input type="hidden" name="map_areas" id="mapAreas">
       </div>
@@ -131,16 +154,22 @@ label.check small{display:block;color:var(--muted);font-size:13px;margin-top:2px
         <select name="washrooms" required>
           <option value="">Select…</option><option>1</option><option>1.5</option><option>2</option><option>2.5</option><option>3</option><option>4+</option>
         </select></label>
-      <label>Property type
-        <select name="property_type">
-          <option>Any</option><option>Detached house</option><option>Semi-detached</option><option>Townhouse</option><option>Condo apartment</option><option>Basement apartment</option>
-        </select></label>
+      <div class="full ptype" role="group" aria-labelledby="ptLbl">
+        <span class="lbl" id="ptLbl">Property type <em>(choose one or more, or leave blank for any)</em></span>
+        <div class="pts">
+          <label class="pt"><input type="checkbox" name="property_type" value="Detached house"><span>Detached house</span></label>
+          <label class="pt"><input type="checkbox" name="property_type" value="Semi-detached"><span>Semi-detached</span></label>
+          <label class="pt"><input type="checkbox" name="property_type" value="Townhouse"><span>Townhouse</span></label>
+          <label class="pt"><input type="checkbox" name="property_type" value="Condo apartment"><span>Condo apartment</span></label>
+          <label class="pt"><input type="checkbox" name="property_type" value="Basement apartment"><span>Basement apartment</span></label>
+        </div>
+      </div>
       <label>Parking spots needed
         <select name="parking"><option>0</option><option selected>1</option><option>2</option><option>3+</option></select></label>
-      <label>Move-in / possession date
-        <input name="move_date" type="date"></label>
       <label>Number of occupants
         <input name="occupants" type="number" min="1" max="12" inputmode="numeric" placeholder="e.g. 3"></label>
+      <label>Move-in / possession date
+        <input name="move_date" type="date"></label>
       <label class="full">Other requirements
         <textarea name="requirements" placeholder="Pets, near school or transit, laundry, furnished, accessibility, must-haves and deal-breakers…"></textarea></label>
     </div>
@@ -177,7 +206,7 @@ label.check small{display:block;color:var(--muted);font-size:13px;margin-top:2px
   <div class="cols">
     <div class="fl"><img src="logo.png" alt="AKS Group" width="145" height="48"><p>Engineering, construction and real estate for homeowners, investors and builders across Ontario.</p></div>
     <div><h4>Group</h4><ul><li><a href="index.html">Home</a></li><li><a href="about.html">About AKS Group</a></li><li><a href="contact.html">Contact</a></li></ul></div>
-    <div><h4>Companies</h4><ul><li><a href="engineering.html">AKS Consulting Group</a></li><li><a href="electrical.html">AKS Electricals &amp; Automation</a></li><li><a href="realty.html">AKS Realty</a></li><li><a href="find-a-home.html">Find a home (rent/buy)</a></li><li><a href="realty.html#insurance">Insurance ($20 credit)</a></li></ul></div>
+    <div><h4>Companies</h4><ul><li><a href="engineering.html">AKS Consulting Group</a></li><li><a href="electrical.html">AKS Electricals &amp; Automation</a></li><li><a href="realty.html">AKS Realty</a></li></ul></div>
     <div><h4>Projects</h4><ul><li><a href="projects.html#active">Active projects</a></li><li><a href="projects.html#completed">Completed projects</a></li></ul></div>
     <div><h4>Contact</h4><ul><li>(647) 620-1689</li><li>info@aksgroup.ca</li><li>Scarborough, Toronto, ON</li><li><a href="https://www.facebook.com/Keenkarthik.Sundaram" target="_blank" rel="noopener">Facebook</a></li></ul></div>
   </div>
@@ -189,8 +218,6 @@ label.check small{display:block;color:var(--muted);font-size:13px;margin-top:2px
   <div class="base"><span>© <span class="js-year">2026</span> AKS Group · aksgroup.ca</span></div>
 </div></footer>
 <script>
-/* Google Maps API key (Maps JavaScript API + Geocoding API enabled, restricted to your site's domain). Leave "" to hide the map and keep the typed-area box only. */
-const MAPS_API_KEY = "";
 /* Google Apps Script web-app URL (Code.gs). Requests go ONLY here: it creates a Drive folder per client and adds a row to the common sheet. Required: until it is set, the form shows an error instead of sending. */
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwkp07tGxd3uaGtKZekuW-DfEejKxVVZsP3mlXq_kkp_d5NYi2OE2ZbLk2l8Keo7pC4/exec";
 (function(){
@@ -224,8 +251,9 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwkp07tGxd3uaGt
   const btn=document.getElementById('submitBtn'); btn.disabled=true; btn.textContent='Sending…';
   try{
    const fd=new FormData(form);
+   const data={}; fd.forEach((v,k)=>{data[k]=k in data?data[k]+', '+v:v}); if(!data.property_type) data.property_type='Any';
    if(!APPS_SCRIPT_URL) throw new Error('Google Drive link not set up');
-   await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.fromEntries(fd))});
+   await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data)});
    /* sent to your Google Drive only */
    form.hidden=true;
    document.getElementById('doneName').textContent=form.elements['name'].value.split(' ')[0];
@@ -238,66 +266,160 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwkp07tGxd3uaGt
  });
 })();
 
-/* ---- Map: mark preferred areas with circles / squares ---- */
+/* ---- Map: free OpenStreetMap (no key, no fees). Mark preferred areas with circles / squares ---- */
 window.fahShapes=[];
 (function(){
- const box=document.getElementById('mapbox'); if(!MAPS_API_KEY||!box) return;
- let map,mode='circle',geocoder; const shapes=window.fahShapes, MAX=5, R=1500, M=111320;
- const fmt=n=>n.toFixed(5), link=(la,ln)=>`https://www.google.com/maps/search/?api=1&query=${fmt(la)},${fmt(ln)}`;
- const kind=s=>s.kind==='circle'?'Circle':'Square';
- function sizeKm(s){if(s.kind==='circle')return s.obj.getRadius()/1000;const b=s.obj.getBounds();return (b.getNorthEast().lat()-b.getSouthWest().lat())/2*M/1000}
- function setSize(s,km){
-  const m=km*1000; if(s.kind==='circle'){s.obj.setRadius(m);return}
-  const b=s.obj.getBounds(),la=(b.getNorthEast().lat()+b.getSouthWest().lat())/2,ln=(b.getNorthEast().lng()+b.getSouthWest().lng())/2;
-  s.obj.setBounds({north:la+m/M,south:la-m/M,east:ln+m/(M*Math.cos(la*Math.PI/180)),west:ln-m/(M*Math.cos(la*Math.PI/180))});
+ const box=document.getElementById('mapbox'), el=document.getElementById('map'); if(!box||!el) return;
+ const T=256, M=111320, MAX=5, shapes=window.fahShapes, LIM={s:41.4,n:57.0,w:-96.0,e:-73.0};
+ let mode='circle', z=6, c={lat:44.2,lng:-79.6}, W=0, H=0;
+ const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+ const world=(lat,lng,zz)=>{const s=T*2**zz,sin=Math.sin(lat*Math.PI/180);return{x:(lng+180)/360*s,y:(.5-Math.log((1+sin)/(1-sin))/(4*Math.PI))*s}};
+ const unworld=(x,y,zz)=>{const s=T*2**zz,n=Math.PI-2*Math.PI*y/s;return{lat:180/Math.PI*Math.atan(.5*(Math.exp(n)-Math.exp(-n))),lng:x/s*360-180}};
+ const mpp=(lat,zz=z)=>156543.03392*Math.cos(lat*Math.PI/180)/2**zz;      /* metres per screen pixel */
+ const proj=(lat,lng)=>{const a=world(lat,lng,z),o=world(c.lat,c.lng,z);return{x:a.x-o.x+W/2,y:a.y-o.y+H/2}};
+ const unproj=(x,y)=>{const o=world(c.lat,c.lng,z);return unworld(o.x-W/2+x,o.y-H/2+y,z)};
+ const rel=e=>{const r=el.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
+ const fmt=n=>n.toFixed(5), glink=(la,ln)=>`https://www.google.com/maps/search/?api=1&query=${fmt(la)},${fmt(ln)}`;
+ const say=t=>{const m=document.getElementById('mapMsg');m.textContent=t||'';m.hidden=!t};
+
+ /* layers */
+ el.innerHTML='<div class="tl"></div><div class="ov"></div><div class="mz"><button type="button" data-z="1" aria-label="Zoom in">+</button><button type="button" data-z="-1" aria-label="Zoom out">&minus;</button></div><div class="mattr">&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors</div>';
+ const tl=el.querySelector('.tl'), ov=el.querySelector('.ov'), tiles=new Map();
+
+ /* OpenStreetMap only serves tiles to real websites (it needs a site referrer). In a preview or a local file, show a plain grid instead of its "Access blocked" tiles. */
+ const TILES_OK=window.FAH_PREVIEW!==true&&/^https?:$/.test(location.protocol);
+ function drawTiles(){
+  if(!TILES_OK){
+   if(!tl.dataset.ph){tl.dataset.ph=1;tl.style.background='#e9eff1 repeating-linear-gradient(0deg,#d3dde0 0 1px,transparent 1px 48px),repeating-linear-gradient(90deg,#d3dde0 0 1px,transparent 1px 48px)';
+    const n=document.createElement('div');n.textContent='Preview: the real Ontario map appears on the live website';n.style.cssText='position:absolute;left:54px;top:12px;font:600 12px/1.3 sans-serif;color:#51636b;pointer-events:none';tl.append(n)}
+   return;
+  }
+  const o=world(c.lat,c.lng,z), x0=o.x-W/2, y0=o.y-H/2, n=2**z, need=new Set();
+  for(let ty=Math.floor(y0/T);ty<=Math.floor((y0+H)/T);ty++) for(let tx=Math.floor(x0/T);tx<=Math.floor((x0+W)/T);tx++){
+   if(ty<0||ty>=n) continue; const k=z+'/'+tx+'/'+ty; need.add(k);
+   let im=tiles.get(k);
+   if(!im){im=new Image();im.alt='';im.draggable=false;im.onerror=()=>{im.style.visibility='hidden'};im.src=`https://tile.openstreetmap.org/${z}/${((tx%n)+n)%n}/${ty}.png`;tl.append(im);tiles.set(k,im)}
+   im.style.transform=`translate(${Math.round(tx*T-x0)}px,${Math.round(ty*T-y0)}px)`;
+  }
+  tiles.forEach((im,k)=>{if(!need.has(k)){im.remove();tiles.delete(k)}});
+ }
+ const place=(h,x,y)=>{h.style.transform=`translate(${x-9}px,${y-9}px)`};
+ function drawShape(s){
+  const b=s.el.style;
+  if(s.kind==='circle'){const p=proj(s.c.lat,s.c.lng),r=s.r/mpp(s.c.lat),k=r*Math.SQRT1_2;
+   b.left=p.x-r+'px';b.top=p.y-r+'px';b.width=b.height=2*r+'px';b.borderRadius='50%';
+   place(s.mv,p.x,p.y);[[-1,-1],[1,-1],[-1,1],[1,1]].forEach((d,i)=>place(s.cs[i],p.x+d[0]*k,p.y+d[1]*k));
+  }else{const a=proj(s.b.n,s.b.w),e=proj(s.b.s,s.b.e);
+   b.left=a.x+'px';b.top=a.y+'px';b.width=e.x-a.x+'px';b.height=e.y-a.y+'px';
+   place(s.mv,(a.x+e.x)/2,(a.y+e.y)/2);[[a.x,a.y],[e.x,a.y],[a.x,e.y],[e.x,e.y]].forEach((p,i)=>place(s.cs[i],p[0],p[1]));
+  }
+ }
+ function render(){W=el.clientWidth;H=el.clientHeight;if(!W)return;drawTiles();shapes.forEach(drawShape)}
+
+ /* view control */
+ function setView(nc,nz){z=clamp(nz,5,17);c={lat:clamp(nc.lat,LIM.s,LIM.n),lng:clamp(nc.lng,LIM.w,LIM.e)};render()}
+ function fitBounds(s,w,n,e){W=el.clientWidth;H=el.clientHeight;let zz=17;
+  while(zz>5){const a=world(n,w,zz),b=world(s,e,zz);if(Math.abs(b.x-a.x)<=W*.85&&Math.abs(b.y-a.y)<=H*.85)break;zz--}
+  setView({lat:(s+n)/2,lng:(w+e)/2},zz)}
+ el.querySelectorAll('.mz button').forEach(b=>b.addEventListener('click',()=>setView(c,z+ +b.dataset.z)));
+ let wt=0; el.addEventListener('wheel',e=>{if(!e.ctrlKey)return;e.preventDefault();const t=Date.now();if(t-wt<250)return;wt=t;setView(c,z+(e.deltaY<0?1:-1))},{passive:false});
+ if(window.ResizeObserver) new ResizeObserver(render).observe(el); window.addEventListener('resize',render);
+
+ /* pan + click-to-place */
+ let pan=null;
+ el.addEventListener('pointerdown',e=>{
+  if(e.target.closest('.mz,.mattr,.shp,.hd')) return;
+  el.setPointerCapture(e.pointerId); pan={sx:e.clientX,sy:e.clientY,o:world(c.lat,c.lng,z),moved:false,pt:rel(e)};
+ });
+ el.addEventListener('pointermove',e=>{
+  if(!pan) return; const dx=e.clientX-pan.sx, dy=e.clientY-pan.sy;
+  if(!pan.moved&&Math.hypot(dx,dy)<5) return; pan.moved=true; el.style.cursor='grabbing';
+  setView(unworld(pan.o.x-dx,pan.o.y-dy,z),z);
+ });
+ const endPan=e=>{if(!pan)return;const p=pan;pan=null;el.style.cursor='';if(!p.moved&&e.type==='pointerup')addShape(p.pt)};
+ el.addEventListener('pointerup',endPan); el.addEventListener('pointercancel',endPan);
+
+ /* dragging handles / shapes */
+ function drag(e,fn){
+  e.preventDefault(); e.stopPropagation(); const t=e.currentTarget; t.setPointerCapture(e.pointerId); let last=rel(e);
+  const mv=ev=>{const p=rel(ev);fn(p.x,p.y,p.x-last.x,p.y-last.y);last=p;drawShapes();update()};
+  const up=()=>{t.removeEventListener('pointermove',mv);t.removeEventListener('pointerup',up);t.removeEventListener('pointercancel',up)};
+  t.addEventListener('pointermove',mv);t.addEventListener('pointerup',up);t.addEventListener('pointercancel',up);
+ }
+ const drawShapes=()=>shapes.forEach(drawShape);
+
+ /* shape models */
+ function shiftPx(s,dx,dy){
+  if(s.kind==='circle'){const p=proj(s.c.lat,s.c.lng);s.c=unproj(p.x+dx,p.y+dy);return}
+  const a=proj(s.b.n,s.b.w),e=proj(s.b.s,s.b.e),nw=unproj(a.x+dx,a.y+dy),se=unproj(e.x+dx,e.y+dy);s.b={n:nw.lat,w:nw.lng,s:se.lat,e:se.lng};
+ }
+ function resizeTo(s,i,x,y){
+  if(s.kind==='circle'){const p=proj(s.c.lat,s.c.lng);s.r=clamp(Math.hypot(x-p.x,y-p.y)*mpp(s.c.lat),150,60000);return}
+  const a=proj(s.b.n,s.b.w),e=proj(s.b.s,s.b.e), cx=[a.x,e.x,a.x,e.x], cy=[a.y,a.y,e.y,e.y];
+  const fx=cx[3-i], fy=cy[3-i], sx=Math.sign(x-fx)||(i%2?1:-1), sy=Math.sign(y-fy)||(i<2?-1:1), side=Math.max(24,Math.abs(x-fx),Math.abs(y-fy));
+  const p1=unproj(Math.min(fx,fx+sx*side),Math.min(fy,fy+sy*side)), p2=unproj(Math.max(fx,fx+sx*side),Math.max(fy,fy+sy*side));
+  s.b={n:p1.lat,w:p1.lng,s:p2.lat,e:p2.lng};
+ }
+ function sizeKm(s){if(s.kind==='circle')return s.r/1000;const a=proj(s.b.n,s.b.w),e=proj(s.b.s,s.b.e);return (e.x-a.x)/2*mpp((s.b.n+s.b.s)/2)/1000}
+ function setKm(s,km){
+  if(s.kind==='circle'){s.r=km*1000;return}
+  const ce={lat:(s.b.n+s.b.s)/2,lng:(s.b.w+s.b.e)/2},p=proj(ce.lat,ce.lng),h=km*1000/mpp(ce.lat),nw=unproj(p.x-h,p.y-h),se=unproj(p.x+h,p.y+h);
+  s.b={n:nw.lat,w:nw.lng,s:se.lat,e:se.lng};
  }
  function describe(s,i){
-  if(s.kind==='circle'){const c=s.obj.getCenter();return `Circle ${i+1}: centre ${fmt(c.lat())},${fmt(c.lng())} (${link(c.lat(),c.lng())}), radius ${(s.obj.getRadius()/1000).toFixed(1)} km`}
-  const b=s.obj.getBounds(),sw=b.getSouthWest(),ne=b.getNorthEast();
-  return `Square ${i+1}: SW ${fmt(sw.lat())},${fmt(sw.lng())} to NE ${fmt(ne.lat())},${fmt(ne.lng())} (${link((sw.lat()+ne.lat())/2,(sw.lng()+ne.lng())/2)})`;
+  if(s.kind==='circle')return `Circle ${i+1}: centre ${fmt(s.c.lat)},${fmt(s.c.lng)} (${glink(s.c.lat,s.c.lng)}), radius ${(s.r/1000).toFixed(1)} km`;
+  return `Square ${i+1}: SW ${fmt(s.b.s)},${fmt(s.b.w)} to NE ${fmt(s.b.n)},${fmt(s.b.e)} (${glink((s.b.n+s.b.s)/2,(s.b.w+s.b.e)/2)})`;
  }
  const plain=(s,i)=>describe(s,i).replace(/ \(https[^)]*\)/,'');
  function update(){
   document.getElementById('mapAreas').value=shapes.map(describe).join('\n');
-  shapes.forEach((s,i)=>{ if(!s.txt) return; s.txt.textContent=plain(s,i); if(document.activeElement!==s.range) s.range.value=Math.min(15,Math.max(.3,sizeKm(s))); });
+  shapes.forEach((s,i)=>{if(!s.txt)return;s.txt.textContent=plain(s,i);if(document.activeElement!==s.range)s.range.value=clamp(sizeKm(s),.3,15)});
   if(shapes.length) document.getElementById('areas').classList.remove('invalid');
  }
  function renderList(){
   const ul=document.getElementById('shapeList'); ul.innerHTML='';
   shapes.forEach(s=>{
-   const li=document.createElement('li'), sp=document.createElement('span'), b=document.createElement('button'), lab=document.createElement('label'), rg=document.createElement('input');
-   b.type='button'; b.textContent='Remove'; b.addEventListener('click',()=>{s.obj.setMap(null);shapes.splice(shapes.indexOf(s),1);renderList()});
-   rg.type='range'; rg.min='0.3'; rg.max='15'; rg.step='0.1'; rg.setAttribute('aria-label','Resize area');
-   rg.addEventListener('input',()=>setSize(s,+rg.value));
-   lab.className='sz'; lab.append('Smaller',rg,'Bigger');
-   s.txt=sp; s.range=rg; li.append(sp,b,lab); ul.append(li);
+   const li=document.createElement('li'),sp=document.createElement('span'),b=document.createElement('button'),lab=document.createElement('label'),rg=document.createElement('input');
+   b.type='button';b.textContent='Remove';b.addEventListener('click',()=>{removeShape(s);renderList()});
+   rg.type='range';rg.min='0.3';rg.max='15';rg.step='0.1';rg.setAttribute('aria-label','Resize area');
+   rg.addEventListener('input',()=>{setKm(s,+rg.value);drawShapes();update()});
+   lab.className='sz';lab.append('Smaller',rg,'Bigger');s.txt=sp;s.range=rg;li.append(sp,b,lab);ul.append(li);
   });
   update();
  }
- function add(latLng){
-  if(shapes.length>=MAX){alert('You can mark up to '+MAX+' areas. Remove one to add another.');return}
-  const st={strokeColor:'#B5651D',strokeOpacity:.95,strokeWeight:2,fillColor:'#B5651D',fillOpacity:.22,map,editable:true,draggable:true};
-  let obj;
-  if(mode==='circle') obj=new google.maps.Circle({...st,center:latLng,radius:R});
-  else{const dLat=R/M,dLng=R/(M*Math.cos(latLng.lat()*Math.PI/180));
-   obj=new google.maps.Rectangle({...st,bounds:{north:latLng.lat()+dLat,south:latLng.lat()-dLat,east:latLng.lng()+dLng,west:latLng.lng()-dLng}})}
-  shapes.push({kind:mode,obj});
-  ['radius_changed','center_changed','bounds_changed'].forEach(ev=>obj.addListener(ev,update)); renderList();
+ function removeShape(s){s.el.remove();s.mv.remove();s.cs.forEach(h=>h.remove());const i=shapes.indexOf(s);if(i>-1)shapes.splice(i,1)}
+ function addShape(pt){
+  say(''); if(shapes.length>=MAX){say('You can mark up to '+MAX+' areas. Remove one to add another.');return}
+  if(z<10){const ll=unproj(pt.x,pt.y);setView(ll,11);pt={x:W/2,y:H/2}}       /* too far out to place a useful area: zoom in there first */
+  const ll=unproj(pt.x,pt.y), s={kind:mode};
+  const r=clamp(45*mpp(ll.lat),500,5000);
+  if(mode==='circle'){s.c=ll;s.r=r}
+  else{const p=proj(ll.lat,ll.lng),h=r/mpp(ll.lat),nw=unproj(p.x-h,p.y-h),se=unproj(p.x+h,p.y+h);s.b={n:nw.lat,w:nw.lng,s:se.lat,e:se.lng}}
+  s.el=document.createElement('div');s.el.className='shp';ov.append(s.el);
+  s.el.addEventListener('pointerdown',e=>drag(e,(x,y,dx,dy)=>shiftPx(s,dx,dy)));
+  const hd=cls=>{const h=document.createElement('div');h.className='hd '+cls;ov.append(h);return h};
+  s.mv=hd('mv');s.mv.textContent='✥';s.mv.title='Drag to move';
+  s.mv.addEventListener('pointerdown',e=>drag(e,(x,y,dx,dy)=>shiftPx(s,dx,dy)));
+  s.cs=[0,1,2,3].map(i=>{const h=hd('cn');h.title='Drag to resize';h.style.cursor=(i===0||i===3)?'nwse-resize':'nesw-resize';h.addEventListener('pointerdown',e=>drag(e,(x,y)=>resizeTo(s,i,x,y)));return h});
+  shapes.push(s); drawShape(s); renderList();
  }
- window.fahInitMap=function(){
-  box.hidden=false; geocoder=new google.maps.Geocoder();
-  map=new google.maps.Map(document.getElementById('map'),{center:{lat:43.6858,lng:-79.5990},zoom:10,mapTypeControl:false,streetViewControl:false,fullscreenControl:true,gestureHandling:'cooperative'});
-  map.addListener('click',e=>add(e.latLng));
-  box.querySelectorAll('.tool[data-mode]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.mode;box.querySelectorAll('.tool[data-mode]').forEach(x=>x.setAttribute('aria-pressed',x===b))}));
-  document.getElementById('mapClear').addEventListener('click',()=>{shapes.splice(0).forEach(s=>s.obj.setMap(null));renderList()});
-  const go=()=>{const q=document.getElementById('mapSearch').value.trim();if(!q)return;
-   geocoder.geocode({address:q,componentRestrictions:{country:'CA'}},(r,st)=>{if(st==='OK'){map.fitBounds(r[0].geometry.viewport)}})};
-  document.getElementById('mapGo').addEventListener('click',go);
-  document.getElementById('mapSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go()}});
- };
- const sc=document.createElement('script');
- sc.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(MAPS_API_KEY)+'&callback=fahInitMap&loading=async';
- sc.async=true; document.head.appendChild(sc);
+ box.querySelectorAll('.tool[data-mode]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.mode;box.querySelectorAll('.tool[data-mode]').forEach(x=>x.setAttribute('aria-pressed',x===b))}));
+ document.getElementById('mapClear').addEventListener('click',()=>{shapes.slice().forEach(removeShape);renderList();say('')});
+
+ /* search (free OpenStreetMap Nominatim, only when you press Go / Enter) */
+ async function go(){
+  const q=document.getElementById('mapSearch').value.trim(); if(!q) return;
+  if(!TILES_OK){say('Search works on the live website.');return}
+  say('Searching…');
+  try{
+   const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=ca&viewbox=-95.3,56.9,-74.3,41.6&bounded=1&q='+encodeURIComponent(q),{headers:{'Accept':'application/json'}});
+   const j=await r.json();
+   if(j[0]){const b=j[0].boundingbox.map(Number);fitBounds(b[0],b[2],b[1],b[3]);say('')} else say('No match in Ontario. Try a city or street name.');
+  }catch(_){say('Search is unavailable right now. You can still pan and zoom the map.')}
+ }
+ document.getElementById('mapGo').addEventListener('click',go);
+ document.getElementById('mapSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go()}});
+ render();
 })();
 document.querySelectorAll('.js-year').forEach(el=>el.textContent=new Date().getFullYear());
 document.addEventListener('click',e=>{
